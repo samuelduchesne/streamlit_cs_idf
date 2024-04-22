@@ -27,12 +27,19 @@ def get_client(api_key) -> httpx.Client:
 
 # User input for API key and task IDs
 api_key = st.text_input("Enter API key:")
-ids_input = st.text_area("Enter IDs (comma-separated):")
+ids_input = st.text_area("Enter IDs (comma-separated or new-line separated):")
 submit_button = st.button("Submit Tasks")
 client = get_client(api_key)
 
 if submit_button and api_key and ids_input:
-    ids = [id.strip() for id in ids_input.split(",")]
+    # if comma-separated IDs are provided, split them into a list
+    if "," in ids_input:
+        ids = [id.strip() for id in ids_input.split(",")]
+    # else if new-line separated IDs are provided, split them into a list
+    elif "\n" in ids_input:
+        ids = [id.strip() for id in ids_input.split("\n")]
+    else:
+        raise ValueError("IDs must be comma-separated or new-line separated")
     # Dictionary to track status
     task_status = {id: "Pending" for id in ids}
     st.session_state["task_status"] = task_status
